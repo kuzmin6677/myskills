@@ -1,0 +1,7 @@
+rpm -Uvh pack
+
+systemctl enable --now docker 
+
+
+docker load -i tar
+
