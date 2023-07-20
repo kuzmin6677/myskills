@@ -1,0 +1,48 @@
+openssl req -newkey rsa:2048 -nodes -keyout domain.key -out domain.csr
+
+
+Redos
+sudo update-ca-trust enable
+sudo cp ca.crt /etc/pki/ca-trust/source/anchors
+
+update-ca-trust extract
+
+Astra
+ /usr/local/share/ca-certificates
+update-ca-certificates
+
+
+
+
+<VirtualHost *:80>
+  ServerAdmin webmaster@localhost
+  DocumentRoot /var/www/html
+  ErrorLog ${APACHE_LOG_DIR}/error.log
+  CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+  <Directory "/var/www/html">
+      AuthType Basic
+      AuthName "Restricted Content"
+      AuthUserFile /etc/apache2/.htpasswd
+      Require valid-user
+  </Directory>
+</VirtualHost>
+
+
+htpasswd -c /etc/apache2/.htpasswd sinatra
+
+<RequireAll>
+    Require all granted
+    Require not ip 10.1.0.0/16
+</RequireAll>
+
+<VirtualHost *:443>
+    ServerName site.ru
+    DocumentRoot /var/www/apache/data
+    SSLEngine on
+    SSLCertificateFile ssl/cert.pem
+    SSLCertificateKeyFile ssl/cert.key
+    #SSLCertificateChainFile ssl/cert.ca-bundle
+</VirtualHost>
+
+
